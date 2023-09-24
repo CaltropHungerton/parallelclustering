@@ -1,6 +1,9 @@
+#include <fstream>
+#include <sstream>
 #include <iostream>
 #include <vector>
 #include <random>
+#include <string>
 #include <ctime>
 #include <float.h>
 #include <math.h>
@@ -75,6 +78,36 @@ void dataprint(std::vector<std::vector<double>*> &thevec)
     }
 }
 
+// thank you Gpt4 <3
+// Function to read a CSV file and return a vector of pointers to vectors of doubles
+std::vector<std::vector<double>*> readCSV(const std::string &filePath) {
+    std::vector<std::vector<double>*> data;
+    std::ifstream file(filePath);
+    std::string line;
+    std::string token;
+
+    // Check if the file is open
+    if (!file.is_open()) {
+        std::cerr << "Could not open the file: " << filePath << std::endl;
+        return data;
+    }
+
+    // Read each line from the file
+    while (std::getline(file, line)) {
+        std::vector<double> *row = new std::vector<double>;
+        std::istringstream iss(line);
+        
+        // Read each token separated by a comma
+        while (std::getline(iss, token, ',')) {
+            row->push_back(std::stod(token));
+        }
+
+        data.push_back(row);
+    }
+
+    return data;
+}
+
 void update(std::vector<std::vector<double>*> &centroids, std::vector<std::vector<double>*> &data)
 {
     //we make a thing of initial centroids (vector of vec pointers)
@@ -139,9 +172,13 @@ int main()
     we
     */
     // figure out how to load the data into a standard vector of standard vectors for now, optimize later
+    int num_clusters = 3;
+    /*
+    //OG
     int dim = 3;
     int samples = 100;
     int num_clusters = 8;
+    
 
     std::vector<std::vector<double>*> thedata(samples);
     //lets have randomly generated vectors, something chill like 3d for now. let's make 100 of these
@@ -149,6 +186,7 @@ int main()
     {   //std::cout << i;
         thedata[i] = randvec(dim);
     }
+    */
     //dataprint(thedata);
     //we have our samples now, create function/stuff for updating
 
@@ -161,14 +199,17 @@ int main()
 
     //gettting the first random initializations
 
-    std::vector<int> indices = fisherYatesShuffle(samples, num_clusters);
+    std::vector<std::vector<double>*> thedata;
+    thedata = readCSV("iris_edit.csv");
+    //dataprint(thedata);
 
-
+    std::vector<int> indices = fisherYatesShuffle(thedata.size(), num_clusters);
     std::vector<std::vector<double>*> centroids(num_clusters);
     for (int i = 0; i < num_clusters; i++)
     {
         centroids[i] = new std::vector<double>(*thedata[indices[i]]);
     }
+    //dataprint(centroids);
 
     int num_iterations = 100;
     for (int i = 0; i < num_iterations; i++)
@@ -178,5 +219,4 @@ int main()
         dataprint(centroids);
         std::cout << "///////////////////////////////////////////////" << "\n";
     }
-    return 0;
 }
