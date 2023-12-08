@@ -2,7 +2,7 @@
 
 I implemented a GPU parallelized version of k-means clustering as a beginner CUDA C++ project.
 
-Using the iris dataset (150 points) I was able to consistently achieve at least a 100x speedup over my regular k-means implementation.
+Using the well-known iris dataset (150 points) I was able to consistently achieve at least a 100x speedup over my regular k-means implementation.
 
 I also have a short python program that uses an actual clustering library that you can use to verify that it's converging correctly.
 
